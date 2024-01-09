@@ -1,8 +1,13 @@
+import Button from "./ui/button";
+import "./globals.css";
+import { db } from "./lib/data";
 
-export default function Home() {
+export default async function Home() {
+  await db.set("hello", "hello");
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      This is Next
+    <main>
+      <Button isLoading={true}>Hello!</Button>
     </main>
-  )
+  );
 }
