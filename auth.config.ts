@@ -1,7 +1,7 @@
-import type { NextAuthConfig } from "next-auth";
-// import { UpstashRedisAdapter } from "@next-auth/upstash-redis-adapter";
+import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import { db } from "./app/lib/data";
+// import { UpstashRedisAdapter } from "@next-auth/upstash-redis-adapter";
 
 const getGoogleCredentials = () => {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -31,19 +31,20 @@ export const authConfig = {
     GoogleProvider({
       clientId,
       clientSecret,
+      httpOptions: {
+        timeout: 10000,
+      },
     }),
   ],
   callbacks: {
-    async signIn({ account, profile }) {
-      console.log("signIn ", { account, profile });
-
+    // Use this method when you are not using an adapter
+    async signIn({ profile }) {
       if (!profile?.email) {
         throw new Error("No profile");
       }
-
-      const dbUser = (await db.get(`user${profile.sub}`)) as User | null;
+      const dbUser = (await db.get(`user:${profile.sub}`)) as User | null;
       if (!dbUser) {
-        await db.set(`user${profile.sub}`, {
+        await db.set(`user:${profile.sub}`, {
           id: profile.sub,
           name: profile.name,
           email: profile.email,
@@ -53,11 +54,19 @@ export const authConfig = {
       return true;
     },
 
-    async jwt({ token, user, account, profile }) {
-      console.log("jwt ", { token, user, account, profile });
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.name = token.name;
+        session.user.image = token.picture;
+        session.user.email = token.email;
+      }
+      return session;
+    },
 
-      if (profile) {
-        const dbUser = (await db.get(`user${profile.sub}`)) as User | null;
+    async jwt({ token, profile }) {
+      if (!!profile) {
+        const dbUser = (await db.get(`user:${profile.sub}`)) as User | null;
         if (!dbUser) {
           throw new Error("No User found!");
         }
@@ -69,34 +78,21 @@ export const authConfig = {
       return token;
     },
 
-    async session({ session, token }) {
-      console.log("session ", { token, session });
-      if (token) {
-        session.user.id = token.id;
-        session.user.name = token.name;
-        session.user.image = token.picture;
-        session.user.email = token.email;
-      }
-      return session;
-    },
-
-    authorized({ request: { nextUrl }, auth }) {
-      const isLoggedIn = !!auth?.user;
-      const onHomePath = !nextUrl.pathname.startsWith("/login");
-      if (onHomePath) {
-        if (isLoggedIn) return true;
-        return false;
-      } else if (isLoggedIn) {
-        return Response.redirect(new URL("/", nextUrl));
-      }
-      return true;
-    },
+    // Works on next-auth@beta-v5
+    // authorized({ request: { nextUrl }, auth }) {
+    //   const isLoggedIn = !!auth?.user;
+    //   const onHomePath = !nextUrl.pathname.startsWith("/login");
+    //   if (onHomePath) {
+    //     if (isLoggedIn) return true;
+    //     return false;
+    //   } else if (isLoggedIn) {
+    //     return Response.redirect(new URL("/", nextUrl));
+    //   }
+    //   return true;
+    // },
 
     redirect() {
       return "/";
     },
   },
-} satisfies NextAuthConfig;
-
-// const handler = NextAuth(authConfig);
-// export { handler as GET, handler as POST };
+} satisfies NextAuthOptions;

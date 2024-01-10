@@ -1,12 +1,14 @@
 import Button from "./ui/button";
 import "./globals.css";
-import { db } from "./lib/data";
+import { getServerSession } from "next-auth";
+import { authConfig } from "@/auth.config";
 
 export default async function Home() {
-  await db.set("hello", "hello");
+  const session = await getServerSession(authConfig);
 
   return (
     <main>
+      {JSON.stringify(session)}
       <Button isLoading={true}>Hello!</Button>
     </main>
   );
