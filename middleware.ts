@@ -1,19 +1,18 @@
-import type { NextRequest } from "next/server";
-import { getServerSession } from "next-auth";
-import { authConfig } from "./auth.config";
+import { getToken } from "next-auth/jwt";
+import { NextResponse, type NextRequest } from "next/server";
 
 // This function can be marked `async` if using `await` inside
 export async function middleware(req: NextRequest) {
-  const session = await getServerSession(authConfig);
-  const isLoggedin = !!session?.user;
+  const session = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const isLoggedin = !!session?.id;
+
   const onLogin = req.nextUrl.pathname.startsWith("/login");
-  if (!onLogin) {
-    if (isLoggedin) return true;
-    return false;
-  } else if (isLoggedin) {
-    return Response.redirect(new URL("/", req.nextUrl));
+  if (onLogin && isLoggedin) {
+    return NextResponse.redirect(new URL("/", req.nextUrl));
+  } else if (!onLogin && !isLoggedin) {
+    return NextResponse.redirect(new URL("/login", req.nextUrl));
   }
-  return true;
+  return NextResponse.next();
 }
 
 // See "Matching Paths" below to    learn more

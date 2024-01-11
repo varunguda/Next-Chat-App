@@ -1,5 +1,5 @@
-import Button from "./ui/button";
-import "./globals.css";
+import Button from "../ui/button";
+import "../globals.css";
 
 export default async function Home() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import Button from "../ui/button";
+import Button from "../../ui/button";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { signIn } from "next-auth/react";
