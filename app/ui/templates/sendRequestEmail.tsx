@@ -19,7 +19,9 @@ interface YelpRecentLoginEmailProps {
 }
 
 const baseUrl = "https://demo.react.email";
-const pageUrl = "http://localhost:3000";
+const pageUrl = process.env.VERCEL_URL
+  ? `https://${process.env.VERCEL_URL}`
+  : "";
 
 export const YelpRecentLoginEmail = ({
   userMail,
@@ -36,11 +38,11 @@ export const YelpRecentLoginEmail = ({
       <Body style={main}>
         <Container>
           <Section style={logo}>
-            <Img src={`http://localhost:3000/sec_logo_sm.png`} />
+            <Img src={`${pageUrl}/sec_logo_sm.png`} />
           </Section>
 
           <Section style={content}>
-            <Img width={620} src={`http://localhost:3000/main_logo.png`} />
+            <Img width={620} src={`${pageUrl}/main_logo.png`} />
 
             <Row style={{ ...boxInfos, paddingBottom: "0" }}>
               <Column>
