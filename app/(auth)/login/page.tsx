@@ -27,7 +27,7 @@ export default function LoginPage() {
         <div className="w-full flex flex-col items-center max-w-md space-y-8">
           <div className="flex flex-col items-center gap-8">
             <Image
-              src="/logo_w_f.png"
+              src="/sec_logo_lg.png"
               alt="talkative-logo"
               width={500}
               height={300}

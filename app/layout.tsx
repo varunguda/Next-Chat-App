@@ -4,6 +4,9 @@ import "./globals.css";
 import Providers from "./context/providers";
 import SessionProvider from "./context/sessionProvider";
 import { getServerSession } from "next-auth";
+import { authConfig } from "@/auth.config";
+import { NextUIProviderClient } from "./context/nextUiProvider";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,13 +20,16 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession();
+  const session = await getServerSession(authConfig);
 
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NextTopLoader color="#EF5350" />
         <SessionProvider session={session}>
-          <Providers>{children}</Providers>
+          <Providers>
+            <NextUIProviderClient>{children}</NextUIProviderClient>
+          </Providers>
         </SessionProvider>
       </body>
     </html>

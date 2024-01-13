@@ -6,7 +6,6 @@ import { Resend } from "resend";
 import YelpRecentLoginEmail from "../ui/templates/sendRequestEmail";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/auth.config";
-import { redirect } from "next/navigation";
 import { db } from "./data";
 
 const AddFriendFormSchema = z.object({
@@ -28,6 +27,7 @@ export async function addFriend(prevState: State, formData: FormData) {
     email: formData.get("email"),
   });
   if (!validateFields.success) {
+    console.log(validateFields, validateFields.error);
     return {
       errors: validateFields.error.flatten().fieldErrors,
     };
@@ -46,7 +46,7 @@ export async function addFriend(prevState: State, formData: FormData) {
     if (!session?.user) {
       return {
         errors: {
-          message: "Unauthorized!!",
+          mesage: "Unauthorized!!",
         },
       };
     }
@@ -76,6 +76,7 @@ export async function addFriend(prevState: State, formData: FormData) {
     const isAlreadySent = (await fetchRedis(
       "sismember",
       `user:${idToAdd}:incoming_friend_requests`,
+      session.user.id,
     )) as 0 | 1;
     if (isAlreadySent) {
       return {
@@ -102,9 +103,10 @@ export async function addFriend(prevState: State, formData: FormData) {
     db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
 
     return {
-      message: "",
+      message: "A friend request has been sent successfully!",
     };
   } catch (error) {
+    console.log(error);
     if (error instanceof z.ZodError) {
       return {
         errors: {
@@ -117,5 +119,19 @@ export async function addFriend(prevState: State, formData: FormData) {
         message: "Something went wrong, please try again!",
       },
     };
+  }
+}
+
+export async function getUnseenFriendRequests(id: string): Promise<number> {
+  try {
+    const unseenFriendRequests = (
+      (await fetchRedis(
+        "smembers",
+        `user:${id}:incoming_friend_requests`,
+      )) as User[]
+    ).length;
+    return unseenFriendRequests;
+  } catch (error) {
+    throw error;
   }
 }

@@ -1,12 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormState } from "react-dom";
 import { addFriend } from "../lib/actions";
+import toast from "react-hot-toast";
+import Button from "./button";
 
 export default function AddFriendButton() {
   const initialState = { errors: {}, message: null };
   const [state, dispatch] = useFormState(addFriend, initialState);
+
+  useEffect(() => {
+    if (state.errors?.message) {
+      toast.error(state.errors?.message);
+    }
+  }, [state.errors?.message]);
+
+  useEffect(() => {
+    if (state.message) {
+      toast.success(state.message);
+    }
+  }, [state.message]);
 
   return (
     <form action={dispatch} className="max-w-sm">
@@ -24,10 +38,10 @@ export default function AddFriendButton() {
           className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           placeholder="you@example.com"
         />
-        <button type="submit">Add</button>
+        <Button type="submit">Add</Button>
       </div>
       <p className="mt-1 text-sm text-red-600">
-        {JSON.stringify(state?.errors)}
+        {state.errors?.email?.join(", ")}
       </p>
     </form>
   );

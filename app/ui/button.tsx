@@ -1,7 +1,8 @@
 import { type VariantProps, cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
-import React, { ButtonHTMLAttributes } from "react";
+import React, { ButtonHTMLAttributes, Ref } from "react";
 import { cn } from "../lib/utils";
+import { Tooltip } from "@nextui-org/tooltip";
 
 type ButtinVariants = VariantProps<typeof buttonVariants>;
 const buttonVariants = cva(
