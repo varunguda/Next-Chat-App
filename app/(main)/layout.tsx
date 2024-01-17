@@ -6,8 +6,12 @@ import { Icons, TIcons } from "../ui/icons";
 import Image from "next/image";
 import SignOutButton from "../ui/signOutButton";
 import FriendRequestSidebarOptions from "../ui/friendRequestSidebarOptions";
-import { getUnseenFriendRequests } from "../lib/actions";
-import { redirect } from "next/navigation";
+import {
+  getFriendsOfAUserByID,
+  getUnseenFriendRequestsCount,
+} from "../lib/actions";
+import { notFound } from "next/navigation";
+import SidebarChatList from "../ui/sidebarChatList";
 
 interface SidebarOptions {
   id: number;
@@ -27,11 +31,12 @@ const sidebarOptions: SidebarOptions[] = [
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
   const session = await getServerSession(authConfig);
+  if (!session) notFound();
+  const unseenRequestCount = await getUnseenFriendRequestsCount(
+    session.user.id,
+  );
 
-  if (!session?.user.id) {
-    redirect("/login");
-  }
-  const unseenRequestCount = await getUnseenFriendRequests(session.user.id);
+  const friends = await getFriendsOfAUserByID(session.user.id);
 
   return (
     <div className="w-full flex h-screen">
@@ -50,6 +55,17 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
             <Link href="/" className="flex h-26 shrink-0 items-center">
               <Icons.LogoSmall className="h-20 w-auto text-indigo-600" />
             </Link>
+
+            {friends.length > 0 && (
+              <div className="text-xs font-semibold leading-6 text-gray-400">
+                Your chats
+              </div>
+            )}
+
+            <li>
+              <SidebarChatList friends={friends} userID={session.user.id} />
+            </li>
+
             <li>
               <div className="text-xs font-semibold leading-6 text-gray-400">
                 Overview

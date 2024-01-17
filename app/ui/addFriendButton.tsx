@@ -35,10 +35,12 @@ export default function AddFriendButton() {
         <input
           name="email"
           type="text"
-          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+          className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-secondaryRed sm:text-sm sm:leading-6"
           placeholder="you@example.com"
         />
-        <Button type="submit">Add</Button>
+        <Button className="bg-secondaryRed hover:bg-primaryRed" type="submit">
+          Add
+        </Button>
       </div>
       <p className="mt-1 text-sm text-red-600">
         {state.errors?.email?.join(", ")}
