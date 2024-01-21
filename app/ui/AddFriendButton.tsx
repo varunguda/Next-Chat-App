@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useFormState } from "react-dom";
 import { addFriend } from "../lib/actions";
 import toast from "react-hot-toast";
-import Button from "./button";
+import Button from "./Button";
 
 export default function AddFriendButton() {
   const initialState = { errors: {}, message: null };

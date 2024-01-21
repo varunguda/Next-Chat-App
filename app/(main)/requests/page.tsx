@@ -1,5 +1,5 @@
 import { getFriendRequestsByUserId, getUserById } from "@/app/lib/actions";
-import FriendRequestsCard from "@/app/ui/friendRequestsCard";
+import FriendRequestsCard from "@/app/ui/FriendRequestsCard";
 import { authConfig } from "@/auth.config";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";

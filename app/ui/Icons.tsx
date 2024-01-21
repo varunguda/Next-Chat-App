@@ -1,4 +1,4 @@
-import { UserPlus, LucideProps } from "lucide-react";
+import { UserPlus, LucideProps, SendHorizonal } from "lucide-react";
 
 export const Icons = {
   LogoSmall: (props: LucideProps) => (
@@ -78,8 +78,8 @@ export const Icons = {
       </g>
     </svg>
   ),
-
   UserPlus,
+  SendHorizonal,
 };
 
 export type TIcons = keyof typeof Icons;

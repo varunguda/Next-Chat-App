@@ -2,16 +2,16 @@ import { authConfig } from "@/auth.config";
 import { getServerSession } from "next-auth";
 import Link from "next/link";
 import React from "react";
-import { Icons, TIcons } from "../ui/icons";
+import { Icons, TIcons } from "../ui/Icons";
 import Image from "next/image";
-import SignOutButton from "../ui/signOutButton";
-import FriendRequestSidebarOptions from "../ui/friendRequestSidebarOptions";
+import SignOutButton from "../ui/SignOutButton";
+import FriendRequestSidebarOptions from "../ui/FriendRequestSidebarOptions";
 import {
   getFriendsOfAUserByID,
   getUnseenFriendRequestsCount,
 } from "../lib/actions";
 import { notFound } from "next/navigation";
-import SidebarChatList from "../ui/sidebarChatList";
+import SidebarChatList from "../ui/SidebarChatList";
 
 interface SidebarOptions {
   id: number;
@@ -128,7 +128,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         </nav>
       </div>
 
-      <aside className="max-h-screen container py-16 md:py-12 w-full">
+      <aside className="px-4 max-h-screen container py-16 md:py-12 w-full">
         {children}
       </aside>
     </div>

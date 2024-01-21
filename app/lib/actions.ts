@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { fetchRedis } from "./redis";
 import { Resend } from "resend";
-import YelpRecentLoginEmail from "../ui/templates/sendRequestEmail";
+import YelpRecentLoginEmail from "../ui/templates/SendRequestEmail";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/auth.config";
 import { db } from "./data";
@@ -260,9 +260,8 @@ export async function getChatMessages(chatId: string) {
     );
 
     const dbMessages = results.map((message) => JSON.parse(message) as Message);
-    const orderedDBMessages = dbMessages.reverse();
-    const messages = messageArrayValidator.parse(orderedDBMessages);
-
+    dbMessages.reverse();
+    const messages = messageArrayValidator.parse(dbMessages);
     return messages;
   } catch (error) {
     throw new Error("Failed to fetch chat messages!");

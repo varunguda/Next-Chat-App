@@ -15,9 +15,10 @@ export default function FriendRequestsCard({ request }: Props) {
     acceptFriend,
     {} as FriendRequestState,
   );
-  const [rejectState, rejectDispatch] = useFormState(rejectFriend, {
-    message: "a",
-  });
+  const [rejectState, rejectDispatch] = useFormState(
+    rejectFriend,
+    {} as FriendRequestState,
+  );
 
   return (
     <>
