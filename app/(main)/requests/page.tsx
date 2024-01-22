@@ -14,7 +14,7 @@ export default async function page({}: Props) {
   }
   const friendRequestsIds = await getFriendRequestsByUserId(session.user.id!);
   const incomingFriendRequests = await Promise.all(
-    friendRequestsIds.map(async (id): Promise<IncomingFriendRequests> => {
+    friendRequestsIds.map(async (id): Promise<IncomingFriendRequest> => {
       const sender = await getUserById(id);
       const senderParsed = JSON.parse(sender) as User;
 
@@ -26,10 +26,14 @@ export default async function page({}: Props) {
       };
     }),
   );
+
   return (
     <main className="pt-8">
       <h1 className="font-bold text-5xl mb-8">Add a friend</h1>
-      <FriendRequests incomingFriendRequests={incomingFriendRequests} />
+      <FriendRequests
+        incomingFriendRequests={incomingFriendRequests}
+        sessionId={session.user.id}
+      />
       <div className="flex flex-col gap-4"></div>
     </main>
   );

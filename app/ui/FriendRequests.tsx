@@ -3,23 +3,53 @@
 import { Check, X } from "lucide-react";
 import { useAction } from "next-safe-action/hooks";
 import Image from "next/image";
-import React from "react";
-import { acceptFriendAction } from "../lib/nextSafeActions";
+import React, { useEffect, useState } from "react";
+import { acceptFriendAction, rejectFriendAction } from "../lib/nextSafeActions";
+import { useRouter } from "next/navigation";
+import { pusherClient } from "../lib/pushers";
+import { toPusherKey } from "../lib/utils";
 
 type Props = {
-  incomingFriendRequests: IncomingFriendRequests[];
+  incomingFriendRequests: IncomingFriendRequest[];
+  sessionId: string;
 };
 
-export default function FriendRequests({ incomingFriendRequests }: Props) {
+export default function FriendRequests({
+  incomingFriendRequests,
+  sessionId,
+}: Props) {
+  const router = useRouter();
+  const [friendRequests, setFriendRequests] = useState<IncomingFriendRequest[]>(
+    incomingFriendRequests,
+  );
+
   const { execute: acceptFriend } = useAction(acceptFriendAction);
-  const { execute: rejectFriend } = useAction(acceptFriendAction);
+  const { execute: rejectFriend } = useAction(rejectFriendAction);
+
+  useEffect(() => {
+    pusherClient.subscribe(
+      toPusherKey(`user:${sessionId}:incoming_friend_requests`),
+    );
+    const friendRequestHandler = (data: IncomingFriendRequest) => {
+      const newFriendRequests = friendRequests.concat([data]);
+      setFriendRequests(newFriendRequests);
+    };
+    pusherClient.bind("incoming_friend_requests", friendRequestHandler);
+
+    return () => {
+      pusherClient.unsubscribe(
+        toPusherKey(`user:${sessionId}:incoming_friend_requests`),
+      );
+      pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
+    };
+  }, []);
 
   return (
     <>
-      {incomingFriendRequests.length === 0 ? (
+      {friendRequests.length === 0 ? (
         <p className="text-sm text-zinc-500">Nothing to show here...</p>
       ) : (
-        incomingFriendRequests.map((request) => (
+        friendRequests.map((request) => (
           <div key={request.senderId} className="flex gap-4 items-center">
             <div className="relative h-8 w-8 bg-gray-50">
               <Image

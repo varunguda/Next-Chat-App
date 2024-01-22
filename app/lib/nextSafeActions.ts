@@ -76,7 +76,7 @@ export const sendMessageAction = action(
       };
       const message = messageValidator.parse(messageData);
 
-      await db.zadd(`chat:${chatId}:messages`, {
+      db.zadd(`chat:${chatId}:messages`, {
         score: timestamp,
         member: JSON.stringify(message),
       });

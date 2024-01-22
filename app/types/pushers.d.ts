@@ -1,4 +1,4 @@
-interface IncomingFriendRequests {
+interface IncomingFriendRequest {
   senderId: string;
   senderEmail: string;
   senderImage: string | undefined | null;

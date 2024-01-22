@@ -8,6 +8,8 @@ import { getServerSession } from "next-auth";
 import { authConfig } from "@/auth.config";
 import { db } from "./data";
 import { messageArrayValidator } from "./validators/message";
+import { pusherServer } from "./pushers";
+import { toPusherKey } from "./utils";
 
 const AddFriendFormSchema = z.object({
   email: z
@@ -114,6 +116,17 @@ export async function addFriend(prevState: State, formData: FormData) {
         message: `You are now friends with ${emailToAdd}`,
       };
     }
+
+    pusherServer.trigger(
+      toPusherKey(`user:${idToAdd}:incoming_friend_requests`),
+      "incoming_friend_requests",
+      {
+        senderId: session.user.id,
+        senderName: session.user.name,
+        senderEmail: session.user.email,
+        senderImage: session.user.image,
+      } as IncomingFriendRequest,
+    );
 
     // Valid request, send friend request
     db.sadd(`user:${idToAdd}:incoming_friend_requests`, session.user.id);
