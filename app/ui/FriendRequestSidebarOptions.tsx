@@ -23,10 +23,19 @@ const FriendRequestSidebarOptions = ({
     pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_friend_requests`),
     );
-    const friendRequestCountHandler = (data: any) => {
+
+    const friendRequestCountHandler = () => {
       setUnseenRequestCount((prev) => prev + 1);
     };
+    const removeFriendRequetsHandler = () => {
+      setUnseenRequestCount((prev) => prev - 1);
+    };
+
     pusherClient.bind("incoming_friend_requests", friendRequestCountHandler);
+    pusherClient.bind(
+      "remove_incoming_friend_request",
+      removeFriendRequetsHandler,
+    );
 
     return () => {
       pusherClient.unsubscribe(
@@ -36,7 +45,13 @@ const FriendRequestSidebarOptions = ({
         "incoming_friend_requests",
         friendRequestCountHandler,
       );
+      pusherClient.unbind(
+        "remove_incoming_friend_request",
+        removeFriendRequetsHandler,
+      );
     };
+
+    //eslint-disable-next-line
   }, []);
 
   return (

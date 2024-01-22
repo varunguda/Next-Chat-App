@@ -54,6 +54,7 @@ export default async function page({ params }: Props) {
         sessionId={session.user.id}
         sessionImage={session.user.image}
         initialMessages={initialMessages}
+        chatId={params.chatId}
         chatPartner={chatPartner}
       />
       <ChatInput chatId={params.chatId} />

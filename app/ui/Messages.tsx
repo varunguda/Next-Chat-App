@@ -1,14 +1,17 @@
 "use client";
 
 import clsx from "clsx";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import Image from "next/image";
+import { pusherClient } from "../lib/pushers";
+import { toPusherKey } from "../lib/utils";
 
 type Props = {
   initialMessages: Message[];
   sessionId: string;
   chatPartner: User;
+  chatId: string;
   sessionImage: string | null | undefined;
 };
 
@@ -16,9 +19,30 @@ export default function Messages({
   initialMessages,
   sessionId,
   chatPartner,
+  chatId,
   sessionImage,
 }: Props) {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`chat:${chatId}:messages`));
+
+    const chatMessagesHandler = (data: Message) => {
+      setMessages((prev) => [data, ...prev]);
+    };
+
+    pusherClient.bind(toPusherKey(`${chatId}:messages`), chatMessagesHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`chat:${chatId}:messages`));
+      pusherClient.unbind(
+        toPusherKey(`${chatId}:messages`),
+        chatMessagesHandler,
+      );
+    };
+
+    //eslint-disable-next-line
+  }, []);
 
   return (
     <div

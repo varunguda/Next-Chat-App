@@ -9,6 +9,8 @@ import { db } from "./data";
 import { nanoid } from "nanoid";
 import { messageValidator } from "./validators/message";
 import { redirect } from "next/navigation";
+import { pusherServer } from "./pushers";
+import { toPusherKey } from "./utils";
 import { revalidatePath } from "next/cache";
 
 const action = createSafeActionClient();
@@ -76,6 +78,12 @@ export const sendMessageAction = action(
       };
       const message = messageValidator.parse(messageData);
 
+      pusherServer.trigger(
+        toPusherKey(`chat:${chatId}:messages`),
+        toPusherKey(`${chatId}:messages`),
+        message,
+      );
+
       db.zadd(`chat:${chatId}:messages`, {
         score: timestamp,
         member: JSON.stringify(message),
@@ -103,6 +111,7 @@ export const acceptFriendAction = action(
       if (!session || !session.user) {
         redirect("/login");
       }
+
       await Promise.all([
         db.srem(`user:${session.user.id}:incoming_friend_requests`, id),
         db.sadd(`user:${session.user.id}:friends`, id),
@@ -127,6 +136,7 @@ export const rejectFriendAction = action(
       if (!session?.user) {
         redirect("/login");
       }
+
       await db.srem(`user:${session.user.id}:incoming_friend_requests`, id);
 
       revalidatePath("/requests");

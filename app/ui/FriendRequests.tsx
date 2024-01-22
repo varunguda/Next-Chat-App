@@ -8,6 +8,7 @@ import { acceptFriendAction, rejectFriendAction } from "../lib/nextSafeActions";
 import { useRouter } from "next/navigation";
 import { pusherClient } from "../lib/pushers";
 import { toPusherKey } from "../lib/utils";
+import toast from "react-hot-toast";
 
 type Props = {
   incomingFriendRequests: IncomingFriendRequest[];
@@ -23,17 +24,25 @@ export default function FriendRequests({
     incomingFriendRequests,
   );
 
-  const { execute: acceptFriend } = useAction(acceptFriendAction);
-  const { execute: rejectFriend } = useAction(rejectFriendAction);
+  const { execute: acceptFriend, result: acceptResult } =
+    useAction(acceptFriendAction);
+  const { execute: rejectFriend, result: rejectResult } =
+    useAction(rejectFriendAction);
 
   useEffect(() => {
     pusherClient.subscribe(
       toPusherKey(`user:${sessionId}:incoming_friend_requests`),
     );
+
     const friendRequestHandler = (data: IncomingFriendRequest) => {
-      const newFriendRequests = friendRequests.concat([data]);
-      setFriendRequests(newFriendRequests);
+      if (
+        !friendRequests.some((request) => request.senderId === data.senderId)
+      ) {
+        const newFriendRequests = friendRequests.concat([data]);
+        setFriendRequests(newFriendRequests);
+      }
     };
+
     pusherClient.bind("incoming_friend_requests", friendRequestHandler);
 
     return () => {
@@ -42,7 +51,31 @@ export default function FriendRequests({
       );
       pusherClient.unbind("incoming_friend_requests", friendRequestHandler);
     };
+
+    //eslint-disable-next-line
   }, []);
+
+  useEffect(() => {
+    if (
+      JSON.stringify(incomingFriendRequests) !== JSON.stringify(friendRequests)
+    ) {
+      setFriendRequests(incomingFriendRequests);
+    }
+    //eslint-disable-next-line
+  }, [incomingFriendRequests]);
+
+  useEffect(() => {
+    if (!!acceptResult.data?.message || !!rejectResult.data?.message) {
+      toast.success(
+        (acceptResult.data?.message || rejectResult.data?.message)!,
+      );
+      // router.refresh();
+    }
+    if (!!acceptResult.data?.error || !!rejectResult.data?.error) {
+      toast.error((acceptResult.data?.error || rejectResult.data?.error)!);
+      // router.refresh();
+    }
+  }, [acceptResult.data, rejectResult.data, router]);
 
   return (
     <>
