@@ -8,6 +8,8 @@ import { fetchRedis } from "./redis";
 import { db } from "./data";
 import { nanoid } from "nanoid";
 import { messageValidator } from "./validators/message";
+import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 const action = createSafeActionClient();
 
@@ -85,6 +87,54 @@ export const sendMessageAction = action(
     } catch (error) {
       console.log(error);
       throw new Error("Internal Server Error!");
+    }
+  },
+);
+
+const FriendRequestSchema = z.object({
+  id: z.string(),
+});
+
+export const acceptFriendAction = action(
+  FriendRequestSchema,
+  async ({ id }): Promise<NextSafeActionState> => {
+    try {
+      const session = await getServerSession(authConfig);
+      if (!session || !session.user) {
+        redirect("/login");
+      }
+      await Promise.all([
+        db.srem(`user:${session.user.id}:incoming_friend_requests`, id),
+        db.sadd(`user:${session.user.id}:friends`, id),
+        db.sadd(`user:${id}:friends`, session.user.id),
+      ]);
+
+      revalidatePath("/requests");
+      return {
+        message: "Successfully added a new friend",
+      };
+    } catch (error) {
+      throw new Error("Failed to accept friend request!");
+    }
+  },
+);
+
+export const rejectFriendAction = action(
+  FriendRequestSchema,
+  async ({ id }): Promise<NextSafeActionState> => {
+    try {
+      const session = await getServerSession(authConfig);
+      if (!session?.user) {
+        redirect("/login");
+      }
+      await db.srem(`user:${session.user.id}:incoming_friend_requests`, id);
+
+      revalidatePath("/requests");
+      return {
+        message: "Successfully rejected friend request",
+      };
+    } catch (error) {
+      throw new Error("Failed to reject friend request!");
     }
   },
 );

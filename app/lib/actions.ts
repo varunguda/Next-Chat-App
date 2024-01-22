@@ -7,8 +7,6 @@ import YelpRecentLoginEmail from "../ui/templates/SendRequestEmail";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/auth.config";
 import { db } from "./data";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
 import { messageArrayValidator } from "./validators/message";
 
 const AddFriendFormSchema = z.object({
@@ -173,80 +171,6 @@ export async function getUserById(id: string): Promise<string> {
     return await fetchRedis("get", `user:${id}`);
   } catch (error) {
     throw new Error("Failed to fetch user!");
-  }
-}
-
-const FriendRequestSchema = z.object({
-  id: z.string(),
-});
-
-export type FriendRequestState = {
-  message?: string;
-};
-
-export async function acceptFriend(
-  prevState: FriendRequestState,
-  formData: FormData,
-): Promise<FriendRequestState> {
-  const validateFields = FriendRequestSchema.safeParse({
-    id: formData.get("id"),
-  });
-  if (!validateFields.success) {
-    throw new Error("Missing fields: ID");
-  }
-
-  try {
-    const { id } = FriendRequestSchema.parse(
-      Object.fromEntries(formData.entries()),
-    );
-
-    const session = await getServerSession(authConfig);
-    if (!session || !session.user) {
-      redirect("/login");
-    }
-    await Promise.all([
-      db.srem(`user:${session.user.id}:incoming_friend_requests`, id),
-      db.sadd(`user:${session.user.id}:friends`, id),
-      db.sadd(`user:${id}:friends`, session.user.id),
-    ]);
-
-    revalidatePath("/requests");
-    return {
-      message: "Successfully added a new friend",
-    };
-  } catch (error) {
-    throw new Error("Failed to accept friend request!");
-  }
-}
-
-export async function rejectFriend(
-  prevState: FriendRequestState,
-  formData: FormData,
-): Promise<FriendRequestState> {
-  const validateFields = FriendRequestSchema.safeParse({
-    id: formData.get("id"),
-  });
-  if (!validateFields.success) {
-    throw new Error("Missing fields: ID");
-  }
-
-  try {
-    const { id } = FriendRequestSchema.parse(
-      Object.fromEntries(formData.entries()),
-    );
-
-    const session = await getServerSession(authConfig);
-    if (!session?.user) {
-      redirect("/login");
-    }
-    await db.srem(`user:${session.user.id}:incoming_friend_requests`, id);
-
-    revalidatePath("/requests");
-    return {
-      message: "Successfully rejected friend request",
-    };
-  } catch (error) {
-    throw new Error("Failed to reject friend request!");
   }
 }
 

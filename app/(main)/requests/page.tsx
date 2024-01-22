@@ -1,5 +1,5 @@
 import { getFriendRequestsByUserId, getUserById } from "@/app/lib/actions";
-import FriendRequestsCard from "@/app/ui/FriendRequestsCard";
+import FriendRequests from "@/app/ui/FriendRequests";
 import { authConfig } from "@/auth.config";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
@@ -26,17 +26,10 @@ export default async function page({}: Props) {
       };
     }),
   );
-
   return (
     <main className="pt-8">
       <h1 className="font-bold text-5xl mb-8">Add a friend</h1>
-      {incomingFriendRequests.length === 0 ? (
-        <p className="text-sm text-zinc-500">Nothing to show here...</p>
-      ) : (
-        incomingFriendRequests.map((request) => (
-          <FriendRequestsCard key={request.senderId} request={request} />
-        ))
-      )}
+      <FriendRequests incomingFriendRequests={incomingFriendRequests} />
       <div className="flex flex-col gap-4"></div>
     </main>
   );
