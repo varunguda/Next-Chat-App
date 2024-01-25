@@ -9,6 +9,13 @@ const config: Config = {
     "./node_modules/@nextui-org/theme/dist/components/button.js",
   ],
   theme: {
+    container: {
+      center: true,
+      padding: "1.5rem",
+      screens: {
+        "2xl": "1360px",
+      },
+    },
     extend: {
       colors: {
         primaryRed: "#D32F2F",

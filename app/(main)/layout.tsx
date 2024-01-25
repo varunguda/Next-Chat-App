@@ -63,7 +63,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
             )}
 
             <li>
-              <SidebarChatList friends={friends} userID={session.user.id} />
+              <SidebarChatList friends={friends} userId={session.user.id} />
             </li>
 
             <li>
@@ -128,7 +128,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         </nav>
       </div>
 
-      <aside className="px-4 max-h-screen container py-16 md:py-12 w-full">
+      <aside className="max-h-screen container py-16 md:py-12 w-full">
         {children}
       </aside>
     </div>

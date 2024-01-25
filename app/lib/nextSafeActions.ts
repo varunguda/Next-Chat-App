@@ -83,6 +83,15 @@ export const sendMessageAction = action(
         toPusherKey(`${chatId}:messages`),
         message,
       );
+      pusherServer.trigger(
+        toPusherKey(`user:${chatPartnerId}:messages`),
+        "new_message",
+        {
+          ...message,
+          senderImage: sender.image,
+          senderName: sender.name,
+        },
+      );
 
       db.zadd(`chat:${chatId}:messages`, {
         score: timestamp,
@@ -117,6 +126,12 @@ export const acceptFriendAction = action(
         db.sadd(`user:${session.user.id}:friends`, id),
         db.sadd(`user:${id}:friends`, session.user.id),
       ]);
+
+      pusherServer.trigger(
+        toPusherKey(`user:${id}:friends`),
+        "new_friend",
+        session.user.id,
+      );
 
       revalidatePath("/requests");
       return {

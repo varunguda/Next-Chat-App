@@ -1,19 +1,53 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { chatHrefConstructor } from "../lib/utils";
+import React, { use, useEffect, useState } from "react";
+import { chatHrefConstructor, toPusherKey } from "../lib/utils";
 import { Tooltip } from "@nextui-org/tooltip";
 import { usePathname, useRouter } from "next/navigation";
+import { pusherClient } from "../lib/pushers";
+import toast from "react-hot-toast";
 
 type Props = {
   friends: User[];
-  userID: string;
+  userId: string;
 };
 
-export default function SidebarChatList({ friends, userID }: Props) {
+export default function SidebarChatList({ friends, userId }: Props) {
   const router = useRouter();
   const pathname = usePathname();
   const [unseenMessages, setUnseenMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    pusherClient.subscribe(toPusherKey(`user:${userId}:messages`));
+    pusherClient.subscribe(toPusherKey(`user:${userId}:friends`));
+
+    const messagesHandler = (
+      data: Message & { senderImage: string; senderName: string },
+    ) => {
+      const shouldNotify =
+        pathname !== `/chat/${chatHrefConstructor(userId, data.senderId)}`;
+      if (shouldNotify) {
+        toast.success(
+          `hey look, you've got a new message from ${data.senderName}`,
+        );
+      }
+    };
+    const friendsHandler = () => {
+      router.refresh();
+    };
+
+    pusherClient.bind("new_message", messagesHandler);
+    pusherClient.bind("new_friend", friendsHandler);
+
+    return () => {
+      pusherClient.unsubscribe(toPusherKey(`user:${userId}:messages`));
+      pusherClient.unsubscribe(toPusherKey(`user:${userId}:friends`));
+
+      pusherClient.unbind("new_messages", messagesHandler);
+      pusherClient.unbind("new_friend", friendsHandler);
+    };
+    //eslint-disable-next-line
+  }, []);
 
   useEffect(() => {
     if (pathname.includes("/chat/")) {
@@ -34,7 +68,7 @@ export default function SidebarChatList({ friends, userID }: Props) {
           <li key={friend.id}>
             <Tooltip content={friend.email} closeDelay={0}>
               <a
-                href={`/chat/${chatHrefConstructor(userID, friend.id)}`}
+                href={`/chat/${chatHrefConstructor(userId, friend.id)}`}
                 className="text-gray-700 hover:text-secondaryRed hover:bg-gray-50 group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
               >
                 <span

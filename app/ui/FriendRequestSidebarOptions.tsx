@@ -27,15 +27,8 @@ const FriendRequestSidebarOptions = ({
     const friendRequestCountHandler = () => {
       setUnseenRequestCount((prev) => prev + 1);
     };
-    const removeFriendRequetsHandler = () => {
-      setUnseenRequestCount((prev) => prev - 1);
-    };
 
     pusherClient.bind("incoming_friend_requests", friendRequestCountHandler);
-    pusherClient.bind(
-      "remove_incoming_friend_request",
-      removeFriendRequetsHandler,
-    );
 
     return () => {
       pusherClient.unsubscribe(
@@ -44,10 +37,6 @@ const FriendRequestSidebarOptions = ({
       pusherClient.unbind(
         "incoming_friend_requests",
         friendRequestCountHandler,
-      );
-      pusherClient.unbind(
-        "remove_incoming_friend_request",
-        removeFriendRequetsHandler,
       );
     };
 
