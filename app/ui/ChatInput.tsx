@@ -17,9 +17,13 @@ export default function ChatInput({ chatId }: Props) {
   const [input, setInput] = useState<string>("");
   const { execute: send, result, status } = useAction(sendMessageAction);
   const sendMessage = () => {
-    send({ text: input, chatId });
-    setInput("");
-    textareaRef.current?.focus();
+    if (input.trim() !== "") {
+      send({ text: input, chatId });
+      setInput("");
+      textareaRef.current?.focus();
+    } else {
+      textareaRef.current?.blur();
+    }
   };
 
   useEffect(() => {

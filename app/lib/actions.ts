@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { fetchRedis } from "./redis";
 import { Resend } from "resend";
-import YelpRecentLoginEmail from "../ui/templates/SendRequestEmail";
+import LoginEmail from "../ui/templates/SendRequestEmail";
 import { getServerSession } from "next-auth";
 import { authConfig } from "@/auth.config";
 import { db } from "./data";
@@ -69,7 +69,7 @@ export async function addFriend(prevState: State, formData: FormData) {
           : "onboarding@resend.dev",
         to: emailToAdd,
         subject: "A New Request!!",
-        react: YelpRecentLoginEmail({ userMail: session?.user.email! }),
+        react: LoginEmail({ userMail: session?.user.email! }),
       });
       return {
         message: "A friend request has been sent successfully!",

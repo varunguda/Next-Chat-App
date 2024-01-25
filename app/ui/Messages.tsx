@@ -66,26 +66,28 @@ export default function Messages({
               })}
             >
               <div
-                className={clsx(
-                  "flex flex-col space-y-2 text-base max-w-xs mx-2",
-                  {
-                    "order-1 items-end": isCurrentUser,
-                    "order-2 items-start": !isCurrentUser,
-                  },
-                )}
+                className={clsx("flex flex-col space-y-2 text-base mx-2", {
+                  "order-1 items-end": isCurrentUser,
+                  "order-2 items-start": !isCurrentUser,
+                })}
               >
                 <span
-                  className={clsx("px-4 py-2 rounded-lg inline-block", {
-                    "bg-darkRed text-white": isCurrentUser,
-                    "bg-gray-200 text-gray-900": !isCurrentUser,
-                    "rounded-br-none":
-                      !hasNextMessageFromSameUser && isCurrentUser,
-                    "rounded-bl-none":
-                      !hasNextMessageFromSameUser && !isCurrentUser,
-                  })}
+                  className={clsx(
+                    "relative flex items-center flex-wrap gap-x-2 px-4 py-2 rounded-lg max-w-xs lg:max-w-xl",
+                    {
+                      "bg-darkRed text-white": isCurrentUser,
+                      "bg-gray-200 text-gray-900": !isCurrentUser,
+                      "rounded-br-none":
+                        !hasNextMessageFromSameUser && isCurrentUser,
+                      "rounded-bl-none":
+                        !hasNextMessageFromSameUser && !isCurrentUser,
+                    },
+                  )}
                 >
-                  {message.text}{" "}
-                  <span className="ml-2 text-xs text-gray-400">
+                  <span className="break-words overflow-hidden">
+                    {message.text}{" "}
+                  </span>
+                  <span className="text-xs text-gray-400 ml-auto">
                     {format(message.timestamp, "HH:mm")}
                   </span>
                 </span>

@@ -14,7 +14,7 @@ import {
 } from "@react-email/components";
 import * as React from "react";
 
-interface YelpRecentLoginEmailProps {
+interface EmailProps {
   userMail?: string;
 }
 
@@ -23,9 +23,7 @@ const pageUrl = process.env.VERCEL_URL
   ? `https://${process.env.VERCEL_URL}`
   : "";
 
-export const YelpRecentLoginEmail = ({
-  userMail,
-}: YelpRecentLoginEmailProps) => {
+export const LoginEmail = ({ userMail }: EmailProps) => {
   // const formattedDate = new Intl.DateTimeFormat("en", {
   //   dateStyle: "long",
   //   timeStyle: "short",
@@ -34,15 +32,15 @@ export const YelpRecentLoginEmail = ({
   return (
     <Html>
       <Head />
-      <Preview>Yelp recent login</Preview>
+      <Preview>Talkative Login</Preview>
       <Body style={main}>
         <Container>
-          <Section style={logo}>
+          {/*<Section style={logo}>
             <Img src={`${pageUrl}/sec_logo_sm.png`} />
-          </Section>
+          </Section> */}
 
           <Section style={content}>
-            <Img width={620} src={`${pageUrl}/main_logo.png`} />
+            {/*<Img width={620} src={`${pageUrl}/main_logo.png`} /> */}
 
             <Row style={{ ...boxInfos, paddingBottom: "0" }}>
               <Column>
@@ -83,24 +81,13 @@ export const YelpRecentLoginEmail = ({
           <Section style={containerImageFooter}>
             <Img width={620} src={`${baseUrl}/static/yelp-footer.png`} />
           </Section>
-
-          <Text
-            style={{
-              textAlign: "center",
-              fontSize: 12,
-              color: "rgb(0,0,0, 0.7)",
-            }}
-          >
-            © 2022 | Yelp Inc., 350 Mission Street, San Francisco, CA 94105,
-            U.S.A. | www.yelp.com
-          </Text>
         </Container>
       </Body>
     </Html>
   );
 };
 
-export default YelpRecentLoginEmail;
+export default LoginEmail;
 
 const main = {
   backgroundColor: "#fff",

@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { chatHrefConstructor } from "../lib/utils";
 import { Tooltip } from "@nextui-org/tooltip";
 import { usePathname, useRouter } from "next/navigation";
-import clsx from "clsx";
 
 type Props = {
   friends: User[];
