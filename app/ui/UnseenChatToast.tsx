@@ -1,4 +1,6 @@
-import { chatHrefConstructor, cn } from "@/app/lib/utils";
+import { chatHrefConstructor } from "@/app/lib/utils";
+import clsx from "clsx";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { FC } from "react";
 import { toast, type Toast } from "react-hot-toast";
@@ -22,14 +24,14 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({
 }) => {
   return (
     <div
-      className={cn(
+      className={clsx(
         "max-w-md w-full bg-white shadow-lg rounded-lg pointer-events-auto flex ring-1 ring-black ring-opacity-5",
-        { "animate-indeterminate-bar": t.visible, "animate-leave": !t.visible },
+        { "animate-enter": t.visible, "animate-leave": !t.visible },
       )}
     >
       <a
         onClick={() => toast.dismiss(t.id)}
-        href={`/dashboard/chat/${chatHrefConstructor(sessionId, senderId)}`}
+        href={`/chat/${chatHrefConstructor(sessionId, senderId)}`}
         className="flex-1 w-0 p-4"
       >
         <div className="flex items-start">
@@ -47,7 +49,9 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({
 
           <div className="ml-3 flex-1">
             <p className="text-sm font-medium text-gray-900">{senderName}</p>
-            <p className="mt-1 text-sm text-gray-500">{senderMessage}</p>
+            <p className="mt-1 text-sm text-gray-500">
+              {senderMessage.slice(0, 20)}...
+            </p>
           </div>
         </div>
       </a>
@@ -55,9 +59,9 @@ const UnseenChatToast: FC<UnseenChatToastProps> = ({
       <div className="flex border-l border-gray-200">
         <button
           onClick={() => toast.dismiss(t.id)}
-          className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full border border-transparent rounded-none rounded-r-lg p-4 flex items-center justify-center text-sm font-medium text-secondaryRed hover:text-primaryRed focus:outline-none focus:ring-2 focus:ring-red-100"
         >
-          Close
+          <X />
         </button>
       </div>
     </div>

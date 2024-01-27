@@ -1,11 +1,12 @@
 "use client";
 
-import React, { use, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { chatHrefConstructor, toPusherKey } from "../lib/utils";
 import { Tooltip } from "@nextui-org/tooltip";
 import { usePathname, useRouter } from "next/navigation";
 import { pusherClient } from "../lib/pushers";
 import toast from "react-hot-toast";
+import UnseenChatToast from "./UnseenChatToast";
 
 type Props = {
   friends: User[];
@@ -27,9 +28,17 @@ export default function SidebarChatList({ friends, userId }: Props) {
       const shouldNotify =
         pathname !== `/chat/${chatHrefConstructor(userId, data.senderId)}`;
       if (shouldNotify) {
-        toast.success(
-          `hey look, you've got a new message from ${data.senderName}`,
-        );
+        toast.custom((t) => (
+          <UnseenChatToast
+            t={t}
+            sessionId={userId}
+            senderId={data.senderId}
+            senderName={data.senderName}
+            senderImg={data.senderImage}
+            senderMessage={data.text}
+          />
+        ));
+        setUnseenMessages((prev) => [...prev, data]);
       }
     };
     const friendsHandler = () => {
