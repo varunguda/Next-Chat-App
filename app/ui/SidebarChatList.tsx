@@ -55,8 +55,8 @@ export default function SidebarChatList({ friends, userId }: Props) {
       pusherClient.unbind("new_messages", messagesHandler);
       pusherClient.unbind("new_friend", friendsHandler);
     };
-    //eslint-disable-next-line
-  }, []);
+    // eslint-disable-next-line
+  }, [pathname]);
 
   useEffect(() => {
     if (pathname.includes("/chat/")) {

@@ -12,8 +12,9 @@ import {
 } from "../lib/actions";
 import { notFound } from "next/navigation";
 import SidebarChatList from "../ui/SidebarChatList";
+import MobileChatSidebarLayout from "../ui/MobileChatSidebarLayout";
 
-interface SidebarOptions {
+export interface SidebarOptions {
   id: number;
   title: string;
   href: string;
@@ -41,19 +42,19 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   return (
     <div className="w-full flex h-screen">
       <div className="md:hidden">
-        {/*<MobileChatLayout
+        <MobileChatSidebarLayout
           friends={friends}
           session={session}
           sidebarOptions={sidebarOptions}
           unseenRequestCount={unseenRequestCount}
-        />*/}
+        />
       </div>
 
       <div className="hidden md:flex h-full w-full max-w-xs grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
         <nav className="flex flex-1 flex-col">
           <ul role="list" className="flex flex-1 flex-col gap-y-7">
             <Link href="/" className="flex h-26 shrink-0 items-center">
-              <Icons.LogoSmall className="h-20 w-auto text-indigo-600" />
+              <Icons.LogoSmall className="h-20 w-auto" />
             </Link>
 
             {friends.length > 0 && (
@@ -128,7 +129,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
         </nav>
       </div>
 
-      <aside className="max-h-screen container py-16 md:py-12 w-full">
+      <aside className="max-h-screen container pb-16 pt-20 md:py-12 w-full">
         {children}
       </aside>
     </div>
